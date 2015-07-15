@@ -17,15 +17,35 @@ class mcollective::server::config::factsource::yaml {
   #   - $yaml_fact_path_real
   if $yaml_fact_cron {
     if versioncmp($::facterversion, '3.0.0') >= 0 {
-      cron { 'refresh-mcollective-metadata':
-        command => "facter --yaml >${yaml_fact_path_real} 2>&1",
-        user    => 'root',
-        minute  => [ '0', '15', '30', '45' ],
-      }
-      exec { 'create-mcollective-metadata':
-        path    => "/opt/puppet/bin:${::path}",
-        command => "facter --yaml >${yaml_fact_path_real} 2>&1",
-        creates => $yaml_fact_path_real,
+      case $::kernel {
+        'windows': {
+          scheduled_task { 'refresh-mcollective-metadata':
+            command   => 'c:\program files\puppet labs\puppet\bin\facter.bat',
+            arguments => "--yaml >${yaml_fact_path_real}",
+            trigger   => {
+              schedule         => daily,
+              start_time       => '00:00',
+              minutes_interval => '15',
+              minutes_duration => '1440',
+            }
+          }
+          exec { 'create-mcollective-metadata':
+            command => "c:\\program files\\puppet labs\\puppet\\bin\\facter.bat --yaml >${yaml_fact_path_real} 2>&1",
+            creates => $yaml_fact_path_real,
+          }
+        }
+        default: {
+          cron { 'refresh-mcollective-metadata':
+            command => "facter --yaml >${yaml_fact_path_real} 2>&1",
+            user    => 'root',
+            minute  => [ '0', '15', '30', '45' ],
+          }
+          exec { 'create-mcollective-metadata':
+            path    => "/opt/puppet/bin:${::path}",
+            command => "facter --yaml >${yaml_fact_path_real} 2>&1",
+            creates => $yaml_fact_path_real,
+          }
+        }
       }
     } else {
       file { "${mcollective::site_libdir}/refresh-mcollective-metadata":
