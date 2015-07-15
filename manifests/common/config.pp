@@ -8,10 +8,16 @@ class mcollective::common::config {
     'windows': {
       $site_libdir_owner = 'Administrator'
       $site_libdir_group = 'Administrators'
+      mcollective::common::setting { 'libdir':
+        value => "${mcollective::site_libdir};${mcollective::core_libdir}",
+      } # Windows uses semicolons to separate paths to avoid a clash with drive letters
     }
     default: {
       $site_libdir_owner = 'root'
       $site_libdir_group = '0'
+      mcollective::common::setting { 'libdir':
+        value => "${mcollective::site_libdir}:${mcollective::core_libdir}",
+      }
     }
   }
 
@@ -44,10 +50,6 @@ class mcollective::common::config {
     data   => {
       source_path => [ 'puppet:///modules/mcollective/site_libdir' ],
     }
-  }
-
-  mcollective::common::setting { 'libdir':
-    value => "${mcollective::site_libdir}:${mcollective::core_libdir}",
   }
 
   mcollective::common::setting { 'connector':
