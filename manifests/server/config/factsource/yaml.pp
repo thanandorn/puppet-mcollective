@@ -37,6 +37,7 @@ class mcollective::server::config::factsource::yaml {
         }
         default: {
           cron { 'refresh-mcollective-metadata':
+            environment => "PATH=/opt/puppet/bin:${::path}",
             command => "facter --yaml >${yaml_fact_path_real} 2>&1",
             user    => 'root',
             minute  => [ '0', '15', '30', '45' ],
