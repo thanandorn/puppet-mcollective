@@ -29,8 +29,9 @@ class mcollective::server::config::factsource::yaml {
               minutes_duration => '1440',
             }
           }
+          $facter_path = '"c:\program files\puppet labs\puppet\bin\facter.bat"'
           exec { 'create-mcollective-metadata':
-            command => "c:\\program files\\puppet labs\\puppet\\bin\\facter.bat --yaml >${yaml_fact_path_real} 2>&1",
+            command => "${facter_path} --yaml >${yaml_fact_path_real}",
             creates => $yaml_fact_path_real,
           }
         }
