@@ -24,9 +24,6 @@ class mcollective::server::config::factsource::yaml {
         command => "${mcollective::puppet_exec_path}/puppet facts --render-as yaml >${yaml_fact_path_real} 2>&1",
         creates => $yaml_fact_path_real,
       }
-      mcollective::server::setting { 'puppet_exec_path':
-        value => "${mcollective::puppet_exec_path}/puppet",
-      }
     } else {
       # Template uses:
       #   - $ruby_shebang_path
