@@ -21,9 +21,10 @@ class mcollective::server::config::factsource::yaml {
         minute      => [ '0', '15', '30', '45' ],
       }
       exec { 'create-mcollective-metadata':
-        path      => "/opt/puppet/bin:${mcollective::puppet_exec_path}:${::path}",
-        command   => "puppet facts --render-as yaml >${yaml_fact_path_real} 2>&1",
-        subscribe => Cron['refresh-mcollective-metadata'],
+        path        => "/opt/puppet/bin:${mcollective::puppet_exec_path}:${::path}",
+        command     => "puppet facts --render-as yaml >${yaml_fact_path_real} 2>&1",
+        refreshonly => true,
+        subscribe   => Cron['refresh-mcollective-metadata'],
       }
     } else {
       # Template uses:
