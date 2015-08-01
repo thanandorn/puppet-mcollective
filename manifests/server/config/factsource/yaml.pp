@@ -16,9 +16,9 @@ class mcollective::server::config::factsource::yaml {
     if versioncmp($::facterversion, '3.0.0') >= 0 {
 
       if versioncmp($::facterversion, '3.0.2') >= 0 {
-        $facter_cmd = "facter --yaml --show-legacy"
+        $facter_cmd = 'facter --yaml --show-legacy'
       } else {
-        $facter_cmd = "facter --yaml"
+        $facter_cmd = 'facter --yaml'
       }
 
       cron { 'refresh-mcollective-metadata':
