@@ -14,15 +14,22 @@ class mcollective::server::config::factsource::yaml {
 
   if $yaml_fact_cron {
     if versioncmp($::facterversion, '3.0.0') >= 0 {
+
+      if versioncmp($::facterversion, '3.0.2') >= 0 {
+        $facter_cmd = "facter --yaml --show-legacy"
+      } else {
+        $facter_cmd = "facter --yaml"
+      }
+
       cron { 'refresh-mcollective-metadata':
-        command     => "facter --yaml --show-legacy >${yaml_fact_path_real} 2>&1",
         environment => "PATH=/opt/puppet/bin:${mcollective::puppet_exec_path}:${::path}",
+        command     => "${facter_cmd} >${yaml_fact_path_real} 2>&1",
         user        => 'root',
         minute      => [ '0', '15', '30', '45' ],
       }
       exec { 'create-mcollective-metadata':
         path        => "/opt/puppet/bin:${mcollective::puppet_exec_path}:${::path}",
-        command     => "facter --yaml --show-legacy >${yaml_fact_path_real} 2>&1",
+        command     => "${facter_cmd} >${yaml_fact_path_real} 2>&1",
         refreshonly => true,
         subscribe   => Cron['refresh-mcollective-metadata'],
       }

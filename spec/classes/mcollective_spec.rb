@@ -178,7 +178,32 @@ describe 'mcollective' do
 
         describe '#yaml_fact_cron' do
           context 'default (true)' do
-            it { should contain_cron('refresh-mcollective-metadata') }
+            it { should contain_cron('refresh-mcollective-metadata').with({
+              :command => 'facter --yaml >/etc/mcollective/facts.yaml 2>&1'
+            })}
+            it { should contain_exec('create-mcollective-metadata').with({
+              :command => 'facter --yaml >/etc/mcollective/facts.yaml 2>&1'
+            })}
+          end
+
+          context 'false' do
+            let(:params) { { :yaml_fact_cron => false } }
+            it { should_not contain_cron('refresh-mcollective-metadata') }
+          end
+        end
+      end
+
+      context 'yaml_facter302' do
+        let(:facts) { { :osfamily => 'RedHat', :number_of_cores => '42', :non_string => 69, :facterversion => '3.0.2' } }
+
+        describe '#yaml_fact_cron' do
+          context 'default (true)' do
+            it { should contain_cron('refresh-mcollective-metadata').with({
+              :command => 'facter --yaml --show-legacy >/etc/mcollective/facts.yaml 2>&1'
+            })}
+            it { should contain_exec('create-mcollective-metadata').with({
+              :command => 'facter --yaml --show-legacy >/etc/mcollective/facts.yaml 2>&1'
+            })}
           end
 
           context 'false' do
